@@ -1,38 +1,71 @@
-.App {
-  text-align: center;
+/**{
+    border: red solid 1px;
+}*/
+
+body {
+    color: #222;
+    font-family: 'Montserrat', sans-serif;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+main {
+    padding: 1rem;
+    width: 85%;
+    margin: 0 auto;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+img {
+    max-width: 100%;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 3rem;
 }
 
-.App-link {
-  color: #61dafb;
+header a {
+    text-decoration: none;
+    color: inherit;
+    font-size: 1.2rem;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+header a.logo {
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+header nav {
+    display: flex;
+    gap: 1rem;
+}
+
+
+.entry {
+    display: grid;
+    grid-template-columns: 30% 70%;
+    gap: 2rem;
+    margin-bottom: 1rem;
+}
+
+.entry .text__container h2 {
+    font-size: 2.5rem;
+}
+
+.entry .text__container .info {
+    color: #888;
+    font-size: 0.9rem;
+    font-weight: bold;
+    margin: 1rem 0;
+    display: flex;
+    gap: 0.5rem;
+}
+
+.entry .text__container .info .author {
+    color: black;
+}
+
+.entry .text__container .summary {
+    line-height: 1.5rem;
 }
