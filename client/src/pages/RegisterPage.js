@@ -1,6 +1,11 @@
 const RegisterPage = () => {
     return (
-        <p>register page</p>
+        <form className="register-form">
+            <h1>Register</h1>
+            <input type="text" placeholder="username" />
+            <input type="password" placeholder="password" />
+            <button>Register</button>
+        </form>
     );
 };
 
