@@ -3,15 +3,22 @@ const cors = require('cors');
 const { default: mongoose } = require('mongoose');
 const User = require('./models/User');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
+
 
 require('dotenv').config();
 
 
+crypto.randomBytes(32).toString('hex');
+
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use(cors({ credentials: true, origin: 'http://localhost:3000' }));
 
 mongoose.connect(process.env.DB_URI);
+
+const secretKey = crypto.randomBytes(32).toString('hex');
 
 
 app.post('/register', async (req, res) => {
@@ -32,7 +39,9 @@ app.post('/login', async (req, res) => {
     if (UserDoc === null || !bcrypt.compareSync(password, UserDoc.password)) {
         res.status(400).json('username or password are false!');
     } else {
-        res.status(200).json('login worked!');
+        //logged in
+        const token = await jwt.sign({ username, id: UserDoc.id }, secretKey);
+        res.cookie('token', token).json('ok');
     }
 });
 
