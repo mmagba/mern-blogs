@@ -107,3 +107,12 @@ input {
 .alert {
     color: red;
 }
+
+.logout-btn {
+    background: none;
+    border: none;
+    font: inherit;
+    color: inherit;
+    font-size: 1.2rem;
+    cursor: pointer;
+}
