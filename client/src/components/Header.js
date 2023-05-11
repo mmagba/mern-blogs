@@ -39,7 +39,8 @@ const Header = () => {
                 {userInfo && (
                     <>
                         <Link to='/create'>Create new post</Link>
-                        <button className='logout-btn' onClick={logoutHandler}>Logout ({userInfo.username})</button>
+                        <Link to='/' onClick={logoutHandler}>Logout ({userInfo.username})</Link>
+
                     </>
                 )}
                 {!userInfo && (

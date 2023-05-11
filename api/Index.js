@@ -2,10 +2,12 @@ const express = require('express');
 const cors = require('cors');
 const { default: mongoose } = require('mongoose');
 const User = require('./models/User');
+const Post = require('./models/Post');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const cookieParser = require('cookie-parser');
+const fs = require('fs');
 
 
 require('dotenv').config();
@@ -13,6 +15,9 @@ require('dotenv').config();
 
 
 const app = express();
+const multer = require('multer');
+const uploadMiddleware = multer({ dest: 'uploads/' });
+
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({ credentials: true, origin: 'http://localhost:3000' }));
@@ -51,7 +56,7 @@ app.get('/profile', async (req, res) => {
     try {
         const { token } = req.cookies;
         if (!token) {
-            return res.sendStatus(401);
+            return res.status(401);
         }
         const info = await jwt.verify(token, secretKey);
         res.json(info);
@@ -64,8 +69,31 @@ app.get('/profile', async (req, res) => {
 
 
 app.post('/logout', (req, res) => {
-    console.log('logour middleware called');
     res.cookie('token', '').json('logouted');
+});
+
+
+app.post('/post', uploadMiddleware.single('file'), async (req, res) => {
+    const { originalname, path } = req.file;
+    const parts = originalname.split('.');
+    const ext = parts[parts.length - 1];
+    const newPath = path + '.' + ext;
+    fs.renameSync(path, newPath);
+
+    const { token } = req.cookies;
+    jwt.verify(token, secretKey, {}, async (err, info) => {
+        if (err) throw err;
+        const { title, summary, content } = req.body;
+        const postDoc = await Post.create({
+            title,
+            summary,
+            content,
+            cover: newPath,
+            author: info.id,
+        });
+        res.json(postDoc);
+    });
+
 });
 
 
