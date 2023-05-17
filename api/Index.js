@@ -21,10 +21,10 @@ const uploadMiddleware = multer({ dest: 'uploads/' });
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({ credentials: true, origin: 'http://localhost:3000' }));
+app.use('/uploads', express.static(__dirname + '/uploads'));
 
 mongoose.connect(process.env.DB_URI);
 
-const secretKey = crypto.randomBytes(64).toString('hex');
 
 
 app.post('/register', async (req, res) => {
@@ -46,7 +46,7 @@ app.post('/login', async (req, res) => {
         res.status(400).json('username or password are false!');
     } else {
         //logged in
-        const token = await jwt.sign({ username, id: UserDoc.id }, secretKey);
+        const token = await jwt.sign({ username, id: UserDoc.id }, process.env.SECRET_KEY);
         res.cookie('token', token).json({ username, id: UserDoc.id });
     }
 });
@@ -58,11 +58,11 @@ app.get('/profile', async (req, res) => {
         if (!token) {
             return res.status(401);
         }
-        const info = await jwt.verify(token, secretKey);
+        const info = await jwt.verify(token, process.env.SECRET_KEY);
         res.json(info);
     } catch (err) {
         console.error(err);
-        res.sendStatus(500);
+        res.status(500);
     }
 });
 
@@ -81,7 +81,7 @@ app.post('/post', uploadMiddleware.single('file'), async (req, res) => {
     fs.renameSync(path, newPath);
 
     const { token } = req.cookies;
-    jwt.verify(token, secretKey, {}, async (err, info) => {
+    jwt.verify(token, process.env.SECRET_KEY, {}, async (err, info) => {
         if (err) throw err;
         const { title, summary, content } = req.body;
         const postDoc = await Post.create({
@@ -96,6 +96,11 @@ app.post('/post', uploadMiddleware.single('file'), async (req, res) => {
 
 });
 
+
+
+app.get('/blogs', async (req, res) => {
+    res.json(await Post.find().populate('author', ['username']).sort({ createdAt: -1 }));
+});
 
 
 app.listen(4000);
