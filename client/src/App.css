@@ -110,3 +110,30 @@ input {
 .alert {
     color: red;
 }
+
+
+.entry .text__container a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.post-page>.image img{
+    max-width: 60%;
+    text-align: center;
+}
+
+.post-page .author{
+    margin-bottom: 1rem;
+}
+
+.post-page time{
+    color: gray;
+}
+
+.post-page>.content{
+    line-height: 1.5rem;
+}
+
+.post-page{
+    text-align: center;
+}

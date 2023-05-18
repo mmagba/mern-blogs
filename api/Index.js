@@ -5,7 +5,6 @@ const User = require('./models/User');
 const Post = require('./models/Post');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const crypto = require('crypto');
 const cookieParser = require('cookie-parser');
 const fs = require('fs');
 
@@ -100,6 +99,13 @@ app.post('/post', uploadMiddleware.single('file'), async (req, res) => {
 
 app.get('/blogs', async (req, res) => {
     res.json(await Post.find().populate('author', ['username']).sort({ createdAt: -1 }));
+});
+
+
+app.get('/post/:id', async (req, res) => {
+    const idd = req.params.id;
+    const postDoc = await Post.findById(idd).populate('author', ['username']);
+    res.json(postDoc);
 });
 
 
