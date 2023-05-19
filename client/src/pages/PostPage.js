@@ -3,6 +3,7 @@ import { useContext, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { formatISO9075 } from "date-fns";
 import { UserContext } from '../UserContext';
+import NotFound from './NotFound';
 
 export default function PostPage() {
     const [postInfo, setPostInfo] = useState(null);
@@ -18,7 +19,7 @@ export default function PostPage() {
     }, [id]);
 
     if (!postInfo) {
-        return;
+        return <NotFound />
     }
 
     const sanitizedContent = DOMPurify.sanitize(postInfo.content);

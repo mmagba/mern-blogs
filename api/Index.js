@@ -133,8 +133,12 @@ app.get('/blogs', async (req, res) => {
 
 app.get('/post/:id', async (req, res) => {
     const idd = req.params.id;
-    const postDoc = await Post.findById(idd).populate('author', ['username']);
-    res.json(postDoc);
+    try {
+        const postDoc = await Post.findById(idd).populate('author', ['username']);
+        res.json(postDoc);
+    } catch (err) {
+        res.status(404);
+    }
 });
 
 
