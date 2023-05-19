@@ -137,3 +137,13 @@ input {
 .post-page{
     text-align: center;
 }
+
+.edit-btn{
+    color: white;
+    background-color: gray;
+    border-style: none;
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    margin-bottom: 1rem;
+    cursor: pointer;
+}
