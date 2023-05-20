@@ -146,6 +146,10 @@ app.delete('/delete/:id', async (req, res) => {
     const idd = req.params.id;
     const { token } = req.cookies;
     jwt.verify(token, process.env.SECRET_KEY, {}, async (err, info) => {
+        if (err) {
+            return;
+        }
+
         const postDoc = await Post.findById(idd);
         const isAuthor = JSON.stringify(postDoc.author) === JSON.stringify(info.id);
         if (!isAuthor) {
@@ -154,6 +158,7 @@ app.delete('/delete/:id', async (req, res) => {
         await Post.deleteOne({ _id: idd });
         res.json({ messgae: 'yes' });
     });
+
 });
 
 

@@ -1,7 +1,8 @@
 import 'react-quill/dist/quill.snow.css';
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Navigate } from "react-router-dom";
 import Editor from "../Editor";
+import { UserContext } from '../UserContext';
 
 export default function CreatePost() {
     const [title, setTitle] = useState('');
@@ -10,6 +11,17 @@ export default function CreatePost() {
     const [files, setFiles] = useState('');
 
     const [redirect, setRedirect] = useState(false);
+
+
+
+    const { userInfo } = useContext(UserContext);
+    if (!userInfo) {
+        return <h1 className='alert'>You need to log in to create posts.</h1>
+    }
+
+
+
+    //console.log(userInfo);
 
     async function createNewPost(ev) {
         const data = new FormData();
