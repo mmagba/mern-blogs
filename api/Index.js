@@ -142,5 +142,20 @@ app.get('/post/:id', async (req, res) => {
 });
 
 
+app.delete('/delete/:id', async (req, res) => {
+    const idd = req.params.id;
+    const { token } = req.cookies;
+    jwt.verify(token, process.env.SECRET_KEY, {}, async (err, info) => {
+        const postDoc = await Post.findById(idd);
+        const isAuthor = JSON.stringify(postDoc.author) === JSON.stringify(info.id);
+        if (!isAuthor) {
+            return res.status(400).json('you are not the author');
+        }
+        await Post.deleteOne({ _id: idd });
+        res.json({ messgae: 'yes' });
+    });
+});
+
+
 app.listen(4000);
 

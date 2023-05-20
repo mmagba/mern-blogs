@@ -5,10 +5,18 @@ const RegisterPage = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [falseInfo, setFalseInfo] = useState(false);
+    const [emptyInputsMessage, setEmptyInputsMessage] = useState(false);
     const [redirect, setRedirect] = useState(false);
 
     const submitHandler = async (ev) => {
         ev.preventDefault();
+        setEmptyInputsMessage(false);
+        setFalseInfo(false);
+
+        if (username.trim() === '' || password.trim() === '') {
+            setEmptyInputsMessage(true);
+            return;
+        }
 
         const response = await fetch('http://localhost:4000/register', {
             method: 'POST',
@@ -35,7 +43,8 @@ const RegisterPage = () => {
             <input value={username} onChange={ev => setUsername(ev.target.value)} type="text" placeholder="username" />
             <input value={password} onChange={ev => setPassword(ev.target.value)} type="password" placeholder="password" />
             <button>Register</button>
-            {falseInfo && <p className='alert'>username is already taken</p>}
+            {falseInfo && <p className='alert'>Username is already taken.</p>}
+            {emptyInputsMessage && <p className='alert'>All inputs need to be filled.</p>}
 
         </form>
     );

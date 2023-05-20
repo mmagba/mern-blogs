@@ -30,6 +30,7 @@ export default function PostPage() {
             <time>{formatISO9075(new Date(postInfo.createdAt))}</time>
             <div className="author">by @{postInfo.author.username}</div>
             {userInfo?.id === postInfo.author._id && <Link to={'/edit/' + id}><button className='edit-btn'>Edit post</button></Link>}
+            {userInfo?.id === postInfo.author._id && <Link to={'/delete/' + id}><button className='delete-btn'>Delete post</button></Link>}
 
             <div className="image">
                 <img src={`http://localhost:4000/${postInfo.cover}`} alt="" />

@@ -9,6 +9,8 @@ import CreatePost from './pages/CreatePost';
 import PostPage from './pages/PostPage';
 import EditPost from './pages/EditPost';
 import NotFound from './pages/NotFound';
+import DeletePost from './pages/DeletePost';
+
 
 function App() {
   return (
@@ -21,6 +23,7 @@ function App() {
           <Route path='/create' element={<CreatePost />} />
           <Route path='/post/:id' element={<PostPage />} />
           <Route path='/edit/:id' element={<EditPost />} />
+          <Route path='/delete/:id' element={<DeletePost />} />
           <Route path='*' element={<NotFound />} />
         </Route>
       </Routes>
