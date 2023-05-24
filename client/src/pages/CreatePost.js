@@ -9,6 +9,9 @@ export default function CreatePost() {
     const [summary, setSummary] = useState('');
     const [content, setContent] = useState('');
     const [files, setFiles] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [alert, setAlert] = useState(false);
+    const [emptyInputAlert, setEmptyInputAlert] = useState(false);
 
     const [redirect, setRedirect] = useState(false);
 
@@ -20,16 +23,21 @@ export default function CreatePost() {
     }
 
 
-
-    //console.log(userInfo);
-
     async function createNewPost(ev) {
+        ev.preventDefault();
+        setLoading(true);
+        setAlert(false);
+        setEmptyInputAlert(false);
+        if (title.trim() === '' || summary.trim() === '' || content.trim() === '' || files.length === 0) {
+            setLoading(false);
+            setEmptyInputAlert(true);
+            return;
+        }
         const data = new FormData();
         data.set('title', title);
         data.set('summary', summary);
         data.set('content', content);
         data.set('file', files[0]);
-        ev.preventDefault();
         const response = await fetch('http://localhost:4000/post', {
             method: 'POST',
             body: data,
@@ -37,6 +45,9 @@ export default function CreatePost() {
         });
         if (response.ok) {
             setRedirect(true);
+        } else {
+            setLoading(false);
+            setAlert(true);
         }
     }
 
@@ -56,7 +67,9 @@ export default function CreatePost() {
             <input type="file"
                 onChange={ev => setFiles(ev.target.files)} />
             <Editor value={content} onChange={setContent} />
-            <button style={{ marginTop: '5px' }}>Create post</button>
+            {loading ? <span>Posting ...</span> : <button style={{ marginTop: '5px' }}>Create post</button>}
+            {alert && <p className='alert'>Something went wrong.</p>}
+            {emptyInputAlert && <p className='alert'>Please fill all inputs.</p>}
         </form>
     );
 }

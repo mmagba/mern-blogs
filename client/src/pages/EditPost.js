@@ -9,6 +9,9 @@ export default function EditPost() {
     const [content, setContent] = useState('');
     const [files, setFiles] = useState('');
     const [redirect, setRedirect] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [alert, setAlert] = useState(false);
+    const [emptyInputAlert, setEmptyInputAlert] = useState(false);
 
     const { id } = useParams();
     useEffect(() => {
@@ -24,6 +27,14 @@ export default function EditPost() {
 
     async function editPost(ev) {
         ev.preventDefault();
+        setLoading(true);
+        setAlert(false);
+        setEmptyInputAlert(false);
+        if (title.trim() === '' || summary.trim() === '' || content.trim() === '') {
+            setLoading(false);
+            setEmptyInputAlert(true);
+            return;
+        }
         const data = new FormData();
         data.set('title', title);
         data.set('summary', summary);
@@ -39,6 +50,9 @@ export default function EditPost() {
         });
         if (response.ok) {
             setRedirect(true);
+        } else {
+            setLoading(false);
+            setAlert(true);
         }
     }
 
@@ -60,54 +74,9 @@ export default function EditPost() {
             <input type="file"
                 onChange={ev => setFiles(ev.target.files)} />
             <Editor value={content} onChange={setContent} />
-            <button style={{ marginTop: '5px' }}>Create post</button>
+            {loading ? <span>Editing ...</span> : <button style={{ marginTop: '5px' }}>Edit post</button>}
+            {alert && <p className='alert'>Something went wrong.</p>}
+            {emptyInputAlert && <p className='alert'>Please fill all inputs.</p>}
         </form>
     );
-
-
-
-    ///////
-    /*const [title, setTitle] = useState('');
-    const [summary, setSummary] = useState('');
-    const [content, setContent] = useState('');
-    const [files, setFiles] = useState('');
-
-    const [redirect, setRedirect] = useState(false);
-
-    async function createNewPost(ev) {
-        const data = new FormData();
-        data.set('title', title);
-        data.set('summary', summary);
-        data.set('content', content);
-        data.set('file', files[0]);
-        ev.preventDefault();
-        const response = await fetch('http://localhost:4000/post', {
-            method: 'POST',
-            body: data,
-            credentials: 'include',
-        });
-        if (response.ok) {
-            setRedirect(true);
-        }
-    }
-
-    if (redirect) {
-        return <Navigate to={'/'} />
-    }
-    return (
-        <form className='post-form' onSubmit={createNewPost}>
-            <input type="title"
-                placeholder={'Title'}
-                value={title}
-                onChange={ev => setTitle(ev.target.value)} />
-            <input type="summary"
-                placeholder={'Summary'}
-                value={summary}
-                onChange={ev => setSummary(ev.target.value)} />
-            <input type="file"
-                onChange={ev => setFiles(ev.target.files)} />
-            <Editor value={content} onChange={setContent} />
-            <button style={{ marginTop: '5px' }}>Create post</button>
-        </form>
-    );*/
 }

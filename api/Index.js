@@ -15,18 +15,43 @@ require('dotenv').config();
 
 const app = express();
 const multer = require('multer');
-const uploadMiddleware = multer({ dest: 'uploads/' });
+
+const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
+
+const uploadMiddleware = multer({ dest: 'tmp/' });
 
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({ credentials: true, origin: 'http://localhost:3000' }));
 app.use('/uploads', express.static(__dirname + '/uploads'));
 
-mongoose.connect(process.env.DB_URI);
 
 
+const bucket = 'mmagba-mern-blogs';
+
+async function uploadToS3(path, originalFilename, mimetype) {
+    const client = new S3Client({
+        region: 'eu-central-1',
+        credentials: {
+            accessKeyId: process.env.S3_ACCESS_KEY,
+            secretAccessKey: process.env.S3_SECRET_ACCESS_KEY
+        }
+    });
+    const parts = originalFilename.split('.');
+    const ext = parts[parts.length - 1];
+    const newFileName = Date.now() + '.' + ext;
+    await client.send(new PutObjectCommand({
+        Bucket: bucket,
+        Body: fs.readFileSync(path),
+        Key: newFileName,
+        ContentType: mimetype,
+        ACL: 'public-read',
+    }));
+    return `https://${bucket}.s3.amazonaws.com/${newFileName}`;
+}
 
 app.post('/register', async (req, res) => {
+    mongoose.connect(process.env.DB_URI);
     const { username, password } = req.body;
     try {
         const salt = bcrypt.genSaltSync(10);
@@ -39,6 +64,7 @@ app.post('/register', async (req, res) => {
 });
 
 app.post('/login', async (req, res) => {
+    mongoose.connect(process.env.DB_URI);
     const { username, password } = req.body;
     const UserDoc = await User.findOne({ username });
     if (UserDoc === null || !bcrypt.compareSync(password, UserDoc.password)) {
@@ -73,12 +99,9 @@ app.post('/logout', (req, res) => {
 
 
 app.post('/post', uploadMiddleware.single('file'), async (req, res) => {
-    const { originalname, path } = req.file;
-    const parts = originalname.split('.');
-    const ext = parts[parts.length - 1];
-    const newPath = path + '.' + ext;
-    fs.renameSync(path, newPath);
-
+    mongoose.connect(process.env.DB_URI);
+    const { originalname, path, mimetype } = req.file;
+    const imageURL = await uploadToS3(path, originalname, mimetype);
     const { token } = req.cookies;
     jwt.verify(token, process.env.SECRET_KEY, {}, async (err, info) => {
         if (err) throw err;
@@ -87,7 +110,7 @@ app.post('/post', uploadMiddleware.single('file'), async (req, res) => {
             title,
             summary,
             content,
-            cover: newPath,
+            cover: imageURL,
             author: info.id,
         });
         res.json(postDoc);
@@ -97,13 +120,12 @@ app.post('/post', uploadMiddleware.single('file'), async (req, res) => {
 
 
 app.put('/edit', uploadMiddleware.single('file'), async (req, res) => {
-    let newPath = null;
+    mongoose.connect(process.env.DB_URI);
+    let imageURL = null;
+
     if (req.file) {
-        const { originalname, path } = req.file;
-        const parts = originalname.split('.');
-        const ext = parts[parts.length - 1];
-        newPath = path + '.' + ext;
-        fs.renameSync(path, newPath);
+        const { originalname, path, mimetype } = req.file;
+        imageURL = await uploadToS3(path, originalname, mimetype);
     }
 
     const { token } = req.cookies;
@@ -119,7 +141,7 @@ app.put('/edit', uploadMiddleware.single('file'), async (req, res) => {
             title,
             summary,
             content,
-            cover: newPath ? newPath : postDoc.cover,
+            cover: imageURL ? imageURL : postDoc.cover,
         });
 
         res.json(postDoc);
@@ -127,11 +149,13 @@ app.put('/edit', uploadMiddleware.single('file'), async (req, res) => {
 });
 
 app.get('/blogs', async (req, res) => {
+    mongoose.connect(process.env.DB_URI);
     res.json(await Post.find().populate('author', ['username']).sort({ createdAt: -1 }));
 });
 
 
 app.get('/post/:id', async (req, res) => {
+    mongoose.connect(process.env.DB_URI);
     const idd = req.params.id;
     try {
         const postDoc = await Post.findById(idd).populate('author', ['username']);
@@ -143,6 +167,7 @@ app.get('/post/:id', async (req, res) => {
 
 
 app.delete('/delete/:id', async (req, res) => {
+    mongoose.connect(process.env.DB_URI);
     const idd = req.params.id;
     const { token } = req.cookies;
     jwt.verify(token, process.env.SECRET_KEY, {}, async (err, info) => {

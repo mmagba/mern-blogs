@@ -33,7 +33,7 @@ export default function PostPage() {
             {userInfo?.id === postInfo.author._id && <Link to={'/delete/' + id}><button className='delete-btn'>Delete post</button></Link>}
 
             <div className="image">
-                <img src={`http://localhost:4000/${postInfo.cover}`} alt="" />
+                <img src={`${postInfo.cover}`} alt="" />
             </div>
             <div className='content' dangerouslySetInnerHTML={{ __html: sanitizedContent }} />
         </div>
