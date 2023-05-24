@@ -9,7 +9,7 @@ const DeletePost = () => {
 
 
     useEffect(() => {
-        fetch(`http://localhost:4000/post/${id}`)
+        fetch(`http://localhost:4000/api/post/${id}`)
             .then(response => {
                 response.json().then(postInfo => {
                     setTitle(postInfo.title);
@@ -20,7 +20,7 @@ const DeletePost = () => {
 
     async function deletePost(ev) {
         try {
-            const response = await fetch(`http://localhost:4000/delete/${id}`, {
+            const response = await fetch(`http://localhost:4000/api/delete/${id}`, {
                 method: 'DELETE',
                 credentials: 'include'
             });

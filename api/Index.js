@@ -50,7 +50,7 @@ async function uploadToS3(path, originalFilename, mimetype) {
     return `https://${bucket}.s3.amazonaws.com/${newFileName}`;
 }
 
-app.post('/register', async (req, res) => {
+app.post('/api/register', async (req, res) => {
     mongoose.connect(process.env.DB_URI);
     const { username, password } = req.body;
     try {
@@ -63,7 +63,7 @@ app.post('/register', async (req, res) => {
 
 });
 
-app.post('/login', async (req, res) => {
+app.post('/api/login', async (req, res) => {
     mongoose.connect(process.env.DB_URI);
     const { username, password } = req.body;
     const UserDoc = await User.findOne({ username });
@@ -77,7 +77,7 @@ app.post('/login', async (req, res) => {
 });
 
 
-app.get('/profile', async (req, res) => {
+app.get('/api/profile', async (req, res) => {
     try {
         const { token } = req.cookies;
         if (!token) {
@@ -93,12 +93,12 @@ app.get('/profile', async (req, res) => {
 
 
 
-app.post('/logout', (req, res) => {
+app.post('/api/logout', (req, res) => {
     res.cookie('token', '').json('logouted');
 });
 
 
-app.post('/post', uploadMiddleware.single('file'), async (req, res) => {
+app.post('/api/post', uploadMiddleware.single('file'), async (req, res) => {
     mongoose.connect(process.env.DB_URI);
     const { originalname, path, mimetype } = req.file;
     const imageURL = await uploadToS3(path, originalname, mimetype);
@@ -119,7 +119,7 @@ app.post('/post', uploadMiddleware.single('file'), async (req, res) => {
 });
 
 
-app.put('/edit', uploadMiddleware.single('file'), async (req, res) => {
+app.put('/api/edit', uploadMiddleware.single('file'), async (req, res) => {
     mongoose.connect(process.env.DB_URI);
     let imageURL = null;
 
@@ -148,13 +148,13 @@ app.put('/edit', uploadMiddleware.single('file'), async (req, res) => {
     });
 });
 
-app.get('/blogs', async (req, res) => {
+app.get('/api/blogs', async (req, res) => {
     mongoose.connect(process.env.DB_URI);
     res.json(await Post.find().populate('author', ['username']).sort({ createdAt: -1 }));
 });
 
 
-app.get('/post/:id', async (req, res) => {
+app.get('/api/post/:id', async (req, res) => {
     mongoose.connect(process.env.DB_URI);
     const idd = req.params.id;
     try {
@@ -166,7 +166,7 @@ app.get('/post/:id', async (req, res) => {
 });
 
 
-app.delete('/delete/:id', async (req, res) => {
+app.delete('/api/delete/:id', async (req, res) => {
     mongoose.connect(process.env.DB_URI);
     const idd = req.params.id;
     const { token } = req.cookies;

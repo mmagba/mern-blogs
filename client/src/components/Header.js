@@ -9,7 +9,7 @@ const Header = () => {
 
 
     useEffect(() => {
-        fetch('http://localhost:4000/profile', {
+        fetch('http://localhost:4000/api/profile', {
             credentials: 'include'
         }).then(res => {
             res.json().then(userInfo => {
@@ -23,7 +23,7 @@ const Header = () => {
 
 
     const logoutHandler = () => {
-        fetch('http://localhost:4000/logout', {
+        fetch('http://localhost:4000/api/logout', {
             credentials: 'include',
             method: 'POST',
         })

@@ -6,7 +6,7 @@ const IndexPage = () => {
     const [blogsArray, setBlogsArray] = useState(null);
 
     useEffect(() => {
-        fetch('http://localhost:4000/blogs').then(resonse => {
+        fetch('http://localhost:4000/api/blogs').then(resonse => {
             resonse.json().then(blogs => {
                 setBlogsArray(blogs);
             });
