@@ -22,7 +22,7 @@ const uploadMiddleware = multer({ dest: 'tmp/' });
 
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors({ credentials: true, origin: ['http://localhost:3000', 'https://mern-blogs-two.vercel.app'] }));
+app.use(cors({ credentials: true, origin: 'https://mern-blogs-two.vercel.app' }));
 app.use('/uploads', express.static(__dirname + '/uploads'));
 
 
