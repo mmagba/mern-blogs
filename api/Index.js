@@ -17,11 +17,13 @@ const app = express();
 const multer = require('multer');
 
 const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
+console.log('hello')
 
 const uploadMiddleware = multer({ dest: 'tmp/' });
 
 app.use(express.json());
 app.use(cookieParser());
+
 app.use(cors({ credentials: true, origin: 'https://mern-blogs-two.vercel.app' }));
 app.use('/uploads', express.static(__dirname + '/uploads'));
 
